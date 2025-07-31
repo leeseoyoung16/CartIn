@@ -1,5 +1,7 @@
 package com.shop.CartIn.jwt;
 
+import com.shop.CartIn.CustomUserDetails;
+import com.shop.CartIn.CustomUserDetailsService;
 import com.shop.CartIn.user.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -28,6 +30,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class JwtTokenProvider
 {
+    private final CustomUserDetailsService userDetailsService;
+
     @Value("${jwt.secret}")
     private String secretKeyString;
 
@@ -86,12 +90,12 @@ public class JwtTokenProvider
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get("auth").toString().split(","))
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
-        UserDetails principal = new User(claims.getSubject(),"",authorities);
 
-        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+        String username = claims.getSubject();
+
+        CustomUserDetails userDetails =
+                (CustomUserDetails) userDetailsService.loadUserByUsername(username);
+
+        return new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
     }
 }
