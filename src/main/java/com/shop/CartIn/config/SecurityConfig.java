@@ -1,4 +1,4 @@
-package com.shop.CartIn;
+package com.shop.CartIn.config;
 
 import com.shop.CartIn.jwt.JwtAuthenticationFilter;
 import com.shop.CartIn.jwt.JwtTokenProvider;

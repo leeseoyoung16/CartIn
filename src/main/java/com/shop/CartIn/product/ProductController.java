@@ -1,6 +1,6 @@
 package com.shop.CartIn.product;
 
-import com.shop.CartIn.CustomUserDetails;
+import com.shop.CartIn.config.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
