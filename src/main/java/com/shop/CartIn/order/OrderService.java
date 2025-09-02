@@ -3,6 +3,7 @@ package com.shop.CartIn.order;
 import com.shop.CartIn.orderItem.OrderItem;
 import com.shop.CartIn.product.Product;
 import com.shop.CartIn.product.ProductRepository;
+import com.shop.CartIn.user.Role;
 import com.shop.CartIn.user.User;
 import com.shop.CartIn.user.UserRepository;
 import lombok.AllArgsConstructor;
@@ -91,9 +92,14 @@ public class OrderService
         order.setStatus(OrderStatus.CANCELLED);
     }
 
-    //주문 상태 변경 (관리자용)
+    //주문 상태 변경 (판매자용)
     @Transactional
-    public void change(Long orderId, OrderStatus orderStatus) {
+    public void change(Long userId, Long orderId, OrderStatus orderStatus) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        if(!user.getRole().equals(Role.SELLER)) {
+            throw new IllegalArgumentException("판매자만 주문 상태를 변경할 수 있습니다.");
+        }
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 주문입니다."));
         order.setStatus(orderStatus);
@@ -101,14 +107,14 @@ public class OrderService
 
     //사용자별 주문 내역
     @Transactional(readOnly = true)
-    public List<Order> getBuyerOrders(Long userId) {
+    public List<Order> getByUserOrders(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
         return orderRepository.findByUserId(userId);
     }
-    //관리자 주문 내역
+    //판매자 주문 내역
     @Transactional(readOnly = true)
-    public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+    public List<OrderItem> getBySeller(Long sellerId) {
+        return orderRepository.findByProduct_User_Id(sellerId);
     }
 }

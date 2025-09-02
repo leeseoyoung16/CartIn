@@ -36,7 +36,7 @@ public class Product
     private String imgUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "seller_id")
     private User user;
 
     @Builder

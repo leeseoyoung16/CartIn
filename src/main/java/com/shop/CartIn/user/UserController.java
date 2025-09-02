@@ -1,12 +1,11 @@
 package com.shop.CartIn.user;
 
+import com.shop.CartIn.config.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,6 +24,18 @@ public class UserController
     public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequest registerRequest) {
         userService.register(registerRequest.getUsername(), registerRequest.getPassword(), registerRequest.getEmail());
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<String> getByMe(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        String username =  userDetails.getUsername();
+        String authorities = userDetails.getAuthorities()
+                .stream().
+                map(auth -> auth.getAuthority())
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("NO_ROLE");
+
+        return ResponseEntity.ok(username + " " + authorities);
     }
 
 }

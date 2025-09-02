@@ -2,5 +2,5 @@ package com.shop.CartIn.user;
 
 public enum Role
 {
-    USER, ADMIN
+    USER, SELLER, ADMIN;
 }
